@@ -3,8 +3,10 @@ SUBSYSTEM_DEF(chat)
 	flags = SS_TICKER
 	wait = 1
 	priority = SS_PRIORITY_CHAT
-	init_order = SS_INIT_CHAT
+	init_order = INIT_ORDER_CHAT
+
 	var/list/payload = list()
+
 
 /datum/controller/subsystem/chat/fire()
 	for(var/i in payload)
@@ -15,6 +17,7 @@ SUBSYSTEM_DEF(chat)
 		if(MC_TICK_CHECK)
 			return
 
+
 /datum/controller/subsystem/chat/proc/queue(target, message, handle_whitespace = TRUE, trailing_newline = TRUE)
 	if(!target || !message)
 		return
@@ -24,7 +27,7 @@ SUBSYSTEM_DEF(chat)
 		return
 
 	if(target == world)
-		target = GLOB.clients
+		target = clients
 
 	//Some macros remain in the string even after parsing and fuck up the eventual output
 	var/original_message = message
@@ -49,7 +52,7 @@ SUBSYSTEM_DEF(chat)
 				return
 
 			//Send it to the old style output window.
-			legacy_chat(C, original_message)
+			SEND_TEXT(C, original_message)
 
 			if(!C?.chatOutput || C.chatOutput.broken) //A player who hasn't updated his skin file.
 				continue
@@ -67,7 +70,7 @@ SUBSYSTEM_DEF(chat)
 			return
 
 		//Send it to the old style output window.
-		legacy_chat(C, original_message)
+		SEND_TEXT(C, original_message)
 
 		if(!C?.chatOutput || C.chatOutput.broken) //A player who hasn't updated his skin file.
 			return
